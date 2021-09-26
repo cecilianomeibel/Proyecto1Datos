@@ -6,41 +6,72 @@ import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.net.Socket;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.net.*; 
 
 
-public class Jugador implements Runnable{
-    //Se declaran las variables para la conexion y comunicacion
-    private Socket jugador;
-    private DataOutputStream out;
-    private DataInputStream in;
-    private String host = "localhost";
-}
-
-//Variables del Frame
-private String mensaje;
-private Main frame;
-private JButton [] [] botones;
-private ActionListener ac;
+public class Jugador{
+    public static void main (String [] args){
+        ventanaJugador ventana1 = new ventanaJugador();
+        ventana1.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); //para que al cerrar la ventana no siga ejecutandose
 
 
+        //Host del servidor
+        String HOST ="Localhost";
 
-class ventanajugador extends JFrame {  //La clase hereda de JFrame para poder crear cuadros(ventanas)
-    public ventanajugador(){ //constructor
-        setBounds(500,200,600,300); //define ubicacion en x, y , ancho, alto del cuadro
-        setResizable(false); //Evita que se puede redimencionar la ventana 
-        setTitle("Cliente"); //Colocar un titulo en la ventana 
-        Lamina lamina1 = new Lamina(); //Se crea un objeto
-        add(lamina1); 
-        setVisible(true); //metodo para poder mostrar la ventana
+        //Port del servidor
+        int PORT = 8888;
+        DataInputStream input;
+        DataOutputStream output;
+
+        try{
+            //Se crea el socket para conectarse con el servidor
+            Socket socket = new Socket(HOST, PORT);
+            input = new DataInputStream(socket.getInputStream());
+            output = new DataOutputStream(socket.getOutputStream());
+
+            //Envio un mensaje al servidor
+            Scanner keyboard = new Scanner(System.in);
+            String MensajeParaServidor = keyboard.nextLine();
+            output.writeUTF(MensajeParaServidor);
+
+            //Recibo el mensaje del servidor
+            String mensaje = input.readUTF();
+
+            System.out.println(mensaje);
+
+            socket.close();
+            keyboard.close();
+
+        }catch (IOException ex){
+            Logger.getLogger(Jugador.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
 
-class Lamina expends JPanel implements Runnable{
-    JLabel datos = new JLabel(" "); // instancia para agregar una etiqueta de texto
-        add(datos); // se añade el texto a la lamina
+class ventanaJugador extends JFrame{ //La clase hereda de JFrame para poder crear cuadros(ventanas)
+    public ventanaJugador() { //Constructor
+        setBounds(500, 200, 400, 300);
+        setResizable(false); //evitar que la ventana se redimencione
+        setTitle("Jugador");
+        Lamina lamina1 = new Lamina();
+        add(lamina1);
+        setVisible(true); //muestra la ventana 
+    }
+}
+
+class Lamina extends JPanel implements Runnable{
+
+    public Lamina(){ //constructor
+        
+        
+    }
 
 }
+    
